@@ -347,16 +347,6 @@ namespace SonarAnalyzer.Helpers
                 semanticModel.GetConstantValue(expression).HasValue;
         }
 
-        public static bool IsScalar(this ExpressionSyntax expression, SemanticModel semanticModel)
-        {
-            if (expression == null)
-            {
-                return false;
-            }
-            return expression.RemoveParentheses().IsAnyKind(LiteralSyntaxKinds) ||
-                semanticModel.GetConstantValue(expression).HasValue;
-        }
-
         public static bool IsLeftSideOfAssignment(this ExpressionSyntax expression)
         {
             var topParenthesizedExpression = expression.GetSelfOrTopParenthesizedExpression();
