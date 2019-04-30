@@ -255,7 +255,7 @@ namespace SonarAnalyzer.Helpers
         public static bool IsMethodInvocation(this InvocationExpressionSyntax expression, KnownType type, string methodName, SemanticModel semanticModel) =>
             semanticModel.GetSymbolInfo(expression).Symbol is IMethodSymbol methodSymbol &&
             methodSymbol.IsInType(type) &&
-            methodName.Contains(methodSymbol.Name);
+            methodName.Equals(methodSymbol.Name, StringComparison.InvariantCulture);
 
         public static Location FindIdentifierLocation(this BaseMethodDeclarationSyntax methodDeclaration) =>
             GetIdentifierOrDefault(methodDeclaration)?.GetLocation();
@@ -338,6 +338,16 @@ namespace SonarAnalyzer.Helpers
         }
 
         public static bool IsConstant(this ExpressionSyntax expression, SemanticModel semanticModel)
+        {
+            if (expression == null)
+            {
+                return false;
+            }
+            return expression.RemoveParentheses().IsAnyKind(LiteralSyntaxKinds) ||
+                semanticModel.GetConstantValue(expression).HasValue;
+        }
+
+        public static bool IsScalar(this ExpressionSyntax expression, SemanticModel semanticModel)
         {
             if (expression == null)
             {
